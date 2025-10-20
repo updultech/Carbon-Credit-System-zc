@@ -2,7 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { TreePine, Recycle, Zap, Clock, MapPin, CheckCircle, AlertCircle } from "lucide-react"
+import { TreePine, Recycle, Zap, Clock, MapPin, CheckCircle, AlertCircle, Leaf } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 const recentActivities = [
   {
@@ -45,6 +46,16 @@ const recentActivities = [
     status: "verified",
     icon: TreePine,
   },
+  {
+    id: 5,
+    type: "community-cleanup",
+    title: "Community Cleanup Event",
+    location: "Beach, Tema",
+    date: "4 days ago",
+    credits: 50,
+    status: "verified",
+    icon: Leaf,
+  },
 ]
 
 export function RecentActivities() {
@@ -59,8 +70,11 @@ export function RecentActivities() {
           {recentActivities.map((activity) => {
             const IconComponent = activity.icon
             return (
-              <div key={activity.id} className="flex items-center gap-4 p-3 border rounded-lg">
-                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+              <div
+                key={activity.id}
+                className="flex items-center gap-4 p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+              >
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
                   <IconComponent className="w-5 h-5 text-primary" />
                 </div>
 
@@ -68,25 +82,25 @@ export function RecentActivities() {
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-medium text-sm">{activity.title}</h4>
                     {activity.status === "verified" ? (
-                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
                     ) : (
-                      <AlertCircle className="w-4 h-4 text-yellow-600" />
+                      <AlertCircle className="w-4 h-4 text-yellow-600 flex-shrink-0" />
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
                     <div className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
+                      <MapPin className="w-3 h-3 flex-shrink-0" />
                       <span className="truncate">{activity.location}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
+                      <Clock className="w-3 h-3 flex-shrink-0" />
                       <span>{activity.date}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="text-right flex-shrink-0">
                   <Badge variant={activity.status === "verified" ? "default" : "secondary"} className="mb-1">
                     +{activity.credits} credits
                   </Badge>
@@ -96,6 +110,10 @@ export function RecentActivities() {
             )
           })}
         </div>
+
+        <Button variant="outline" className="w-full mt-4 bg-transparent">
+          View All Activities
+        </Button>
       </CardContent>
     </Card>
   )

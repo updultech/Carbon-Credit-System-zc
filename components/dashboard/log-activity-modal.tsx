@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -9,7 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Camera, MapPin, Calendar } from "lucide-react"
+import { Camera, MapPin, Calendar, AlertCircle } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface LogActivityModalProps {
   isOpen: boolean
@@ -19,6 +19,7 @@ interface LogActivityModalProps {
 
 export function LogActivityModal({ isOpen, onClose, selectedActivityType }: LogActivityModalProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([])
   const [formData, setFormData] = useState({
     activityType: selectedActivityType || "",
     quantity: "",
@@ -45,11 +46,20 @@ export function LogActivityModal({ isOpen, onClose, selectedActivityType }: LogA
       description: "",
       date: new Date().toISOString().split("T")[0],
     })
+    setUploadedPhotos([])
+  }
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files) {
+      const newPhotos = Array.from(files).map((file) => URL.createObjectURL(file))
+      setUploadedPhotos((prev) => [...prev, ...newPhotos])
+    }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Log Environmental Activity</DialogTitle>
           <DialogDescription>
@@ -136,12 +146,28 @@ export function LogActivityModal({ isOpen, onClose, selectedActivityType }: LogA
 
           <div className="space-y-2">
             <Label>Verification Photos</Label>
-            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+            {uploadedPhotos.length > 0 && (
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{uploadedPhotos.length} photo(s) selected for verification</AlertDescription>
+              </Alert>
+            )}
+            <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
               <Camera className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
               <p className="text-sm text-muted-foreground mb-2">Upload photos to verify your activity</p>
-              <Button type="button" variant="outline" size="sm">
-                Choose Photos
-              </Button>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                className="hidden"
+                id="photo-upload"
+              />
+              <label htmlFor="photo-upload">
+                <Button type="button" variant="outline" size="sm" asChild>
+                  <span>Choose Photos</span>
+                </Button>
+              </label>
             </div>
           </div>
 
@@ -149,7 +175,7 @@ export function LogActivityModal({ isOpen, onClose, selectedActivityType }: LogA
             <Button type="button" variant="outline" onClick={onClose} className="flex-1 bg-transparent">
               Cancel
             </Button>
-            <Button type="submit" disabled={isLoading} className="flex-1">
+            <Button type="submit" disabled={isLoading || !formData.activityType} className="flex-1">
               {isLoading ? "Logging..." : "Log Activity"}
             </Button>
           </div>

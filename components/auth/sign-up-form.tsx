@@ -1,16 +1,18 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Leaf, User, Phone, Lock, Mail } from "lucide-react"
+import Link from "next/link"
 
 export function SignUpForm() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -28,6 +30,7 @@ export function SignUpForm() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
+    router.push("/onboarding")
     setIsLoading(false)
   }
 
@@ -153,9 +156,11 @@ export function SignUpForm() {
               </div>
             </div>
 
-            <Button variant="outline" className="w-full bg-transparent" type="button">
-              Sign In Instead
-            </Button>
+            <Link href="/auth/signin">
+              <Button variant="outline" className="w-full bg-transparent" type="button">
+                Sign In Instead
+              </Button>
+            </Link>
           </form>
         </CardContent>
       </Card>

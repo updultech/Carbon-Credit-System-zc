@@ -1,15 +1,17 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Leaf, Lock, Phone } from "lucide-react"
+import Link from "next/link"
 
 export function SignInForm() {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     phone: "",
@@ -23,6 +25,7 @@ export function SignInForm() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
+    router.push("/dashboard")
     setIsLoading(false)
   }
 
@@ -89,9 +92,11 @@ export function SignInForm() {
               </div>
             </div>
 
-            <Button variant="outline" className="w-full bg-transparent" type="button">
-              Create Account
-            </Button>
+            <Link href="/auth/signup">
+              <Button variant="outline" className="w-full bg-transparent" type="button">
+                Create Account
+              </Button>
+            </Link>
           </form>
         </CardContent>
       </Card>

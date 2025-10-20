@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Award, Target, Coins } from "lucide-react"
+import { TrendingUp, Award, Target, Coins, Zap } from "lucide-react"
 
 export function ActivityStats() {
   return (
@@ -57,30 +57,30 @@ export function ActivityStats() {
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-lg">🌱</span>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium text-sm">Tree Planter</p>
                 <p className="text-xs text-muted-foreground">Planted 50+ trees</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-lg">♻️</span>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium text-sm">Recycling Hero</p>
                 <p className="text-xs text-muted-foreground">Recycled 100kg+ waste</p>
               </div>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-lg">⚡</span>
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium text-sm">Clean Energy Champion</p>
                 <p className="text-xs text-muted-foreground">30 days clean energy</p>
               </div>
@@ -113,7 +113,25 @@ export function ActivityStats() {
               <span className="text-sm">Water Conservation</span>
               <Badge variant="secondary">5 activities</Badge>
             </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm">Community Cleanup</span>
+              <Badge variant="secondary">3 activities</Badge>
+            </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Streak Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Zap className="w-5 h-5 text-primary" />
+            Current Streak
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-primary mb-2">12 Days</div>
+          <p className="text-sm text-muted-foreground">Keep logging activities to maintain your streak!</p>
         </CardContent>
       </Card>
     </div>

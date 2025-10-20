@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus, TreePine, Recycle, Zap, Droplets } from "lucide-react"
+import { Plus, TreePine, Recycle, Zap, Droplets, Leaf } from "lucide-react"
 import { LogActivityModal } from "./log-activity-modal"
 
 const activityTypes = [
@@ -39,6 +39,14 @@ const activityTypes = [
     description: "Implement water-saving practices",
     credits: "5-12 credits per activity",
     color: "bg-cyan-100 text-cyan-700",
+  },
+  {
+    id: "community-cleanup",
+    name: "Community Cleanup",
+    icon: Leaf,
+    description: "Participate in community cleanup events",
+    credits: "8-20 credits per event",
+    color: "bg-emerald-100 text-emerald-700",
   },
 ]
 
