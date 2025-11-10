@@ -14,6 +14,7 @@ import Link from "next/link"
 export function SignUpForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -25,13 +26,61 @@ export function SignUpForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
+
+    if (!formData.name.trim()) {
+      setError("Full name is required")
+      return
+    }
+    if (!formData.phone.trim()) {
+      setError("Phone number is required")
+      return
+    }
+    if (!formData.password) {
+      setError("Password is required")
+      return
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match")
+      return
+    }
+    if (!formData.agreeToTerms) {
+      setError("Please agree to the terms and conditions")
+      return
+    }
+
     setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      console.log("[v0] Submitting sign-up form with:", {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+      })
 
-    router.push("/onboarding")
-    setIsLoading(false)
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+      console.log("[v0] Sign-up response:", data)
+
+      if (!response.ok) {
+        setError(data.error || "Failed to create account")
+        setIsLoading(false)
+        return
+      }
+
+      localStorage.setItem("user", JSON.stringify(data.user))
+      console.log("[v0] User created successfully, redirecting to onboarding")
+      router.push("/onboarding")
+    } catch (err) {
+      console.log("[v0] Sign-up error:", err)
+      setError("Network error. Please try again.")
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -46,6 +95,8 @@ export function SignUpForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm">{error}</div>}
+
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
               <div className="relative">
@@ -129,7 +180,9 @@ export function SignUpForm() {
               <Checkbox
                 id="terms"
                 checked={formData.agreeToTerms}
-                onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, agreeToTerms: checked as boolean }))}
+                onCheckedChange={(checked) => {
+                  setFormData((prev) => ({ ...prev, agreeToTerms: checked as boolean }))
+                }}
               />
               <Label htmlFor="terms" className="text-sm">
                 I agree to the{" "}
@@ -143,7 +196,7 @@ export function SignUpForm() {
               </Label>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading || !formData.agreeToTerms}>
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
 

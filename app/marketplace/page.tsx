@@ -105,6 +105,7 @@ export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [userCredits] = useState(1250)
   const [cart, setCart] = useState<number[]>([])
+  const [notification, setNotification] = useState("")
 
   const categories = [
     { id: "all", name: "All Rewards" },
@@ -125,6 +126,11 @@ export default function MarketplacePage() {
 
   const toggleCart = (id: number) => {
     setCart((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
+    const reward = rewards.find((r) => r.id === id)
+    if (!cart.includes(id)) {
+      setNotification(`Added ${reward?.name} to cart`)
+      setTimeout(() => setNotification(""), 2000)
+    }
   }
 
   const cartTotal = cart.reduce((sum, id) => {
@@ -133,6 +139,13 @@ export default function MarketplacePage() {
   }, 0)
 
   const canAfford = cartTotal <= userCredits
+
+  const handleRedeemClick = () => {
+    if (cart.length === 0) return
+    const items = cart.map((id) => rewards.find((r) => r.id === id)?.name).join(", ")
+    alert(`Successfully redeemed ${cart.length} item(s):\n${items}\n\nTotal: ${cartTotal} credits used`)
+    setCart([])
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -222,6 +235,9 @@ export default function MarketplacePage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Notification */}
+        {notification && <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg">{notification}</div>}
 
         {/* Search and Filter */}
         <div className="mb-8 space-y-4">
@@ -325,14 +341,7 @@ export default function MarketplacePage() {
                 <Button variant="outline" onClick={() => setCart([])} className="flex-1">
                   Clear Cart
                 </Button>
-                <Button
-                  disabled={!canAfford}
-                  className="flex-1"
-                  onClick={() => {
-                    alert(`Redeemed ${cart.length} item(s) for ${cartTotal} credits!`)
-                    setCart([])
-                  }}
-                >
+                <Button disabled={!canAfford} className="flex-1" onClick={handleRedeemClick}>
                   <ShoppingCart className="w-4 h-4 mr-2" />
                   Redeem Now
                 </Button>

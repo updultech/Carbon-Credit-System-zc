@@ -1,24 +1,68 @@
 "use client"
 
-import { useState } from "react"
-import { Leaf, LogOut, Settings, Menu, X, Edit2, Award, TrendingUp, Calendar } from "lucide-react"
+import type React from "react"
+
+import { useState, useEffect } from "react"
+import { Leaf, LogOut, Settings, Menu, X, Edit2, Award, TrendingUp, Calendar, Upload, Sun, Moon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
 
 export default function ProfilePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [activeTab, setActiveTab] = useState("achievements")
+  const [isDark, setIsDark] = useState(false)
+  const [profileImage, setProfileImage] = useState<string | null>(null)
 
-  const userProfile = {
+  const [userProfile, setUserProfile] = useState({
     name: "John Mensah",
     phone: "+233 24 123 4567",
     email: "john.mensah@email.com",
     joinDate: "January 15, 2025",
     location: "Accra, Ghana",
     avatar: "JM",
+  })
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"))
+    const savedImage = localStorage.getItem("profileImage")
+    if (savedImage) {
+      setProfileImage(savedImage)
+    }
+  }, [])
+
+  const toggleTheme = () => {
+    const newIsDark = !isDark
+    setIsDark(newIsDark)
+    localStorage.setItem("theme", newIsDark ? "dark" : "light")
+    if (newIsDark) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+  }
+
+  const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const imageData = reader.result as string
+        setProfileImage(imageData)
+        localStorage.setItem("profileImage", imageData)
+        alert("Profile picture updated successfully!")
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleProfileUpdate = () => {
+    alert("Profile updated successfully!")
+    setIsEditing(false)
   }
 
   const stats = {
@@ -60,6 +104,13 @@ export default function ProfilePage() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg border border-border hover:bg-muted transition-colors"
+              aria-label="Toggle theme"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
             <Link href="/dashboard">
               <Button variant="ghost" size="sm">
                 Dashboard
@@ -93,6 +144,22 @@ export default function ProfilePage() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t bg-card/50 p-4 space-y-2">
+            <button
+              onClick={toggleTheme}
+              className="w-full p-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center justify-center gap-2"
+            >
+              {isDark ? (
+                <>
+                  <Sun className="w-4 h-4" />
+                  Light Mode
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4" />
+                  Dark Mode
+                </>
+              )}
+            </button>
             <Link href="/dashboard">
               <Button variant="ghost" className="w-full justify-start">
                 Dashboard
@@ -126,8 +193,24 @@ export default function ProfilePage() {
           <CardContent className="pt-6">
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center text-2xl font-bold text-primary-foreground">
-                  {userProfile.avatar}
+                <div className="relative">
+                  {profileImage ? (
+                    <img
+                      src={profileImage || "/placeholder.svg"}
+                      alt="Profile"
+                      className="w-20 h-20 rounded-full object-cover border-4 border-primary"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center text-2xl font-bold text-primary-foreground border-4 border-primary">
+                      {userProfile.avatar}
+                    </div>
+                  )}
+                  {isEditing && (
+                    <label className="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 p-2 rounded-full cursor-pointer transition-colors">
+                      <Upload className="w-4 h-4 text-primary-foreground" />
+                      <input type="file" accept="image/*" onChange={handleProfileImageUpload} className="hidden" />
+                    </label>
+                  )}
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold text-foreground">{userProfile.name}</h1>
@@ -148,27 +231,36 @@ export default function ProfilePage() {
               <div className="space-y-4 pt-6 border-t">
                 <div>
                   <label className="text-sm font-medium text-foreground">Full Name</label>
-                  <input
-                    type="text"
-                    defaultValue={userProfile.name}
-                    className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground mt-1"
+                  <Input
+                    value={userProfile.name}
+                    onChange={(e) => setUserProfile({ ...userProfile, name: e.target.value })}
+                    className="mt-1"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground">Email</label>
-                  <input
+                  <Input
                     type="email"
-                    defaultValue={userProfile.email}
-                    className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground mt-1"
+                    value={userProfile.email}
+                    onChange={(e) => setUserProfile({ ...userProfile, email: e.target.value })}
+                    className="mt-1"
                   />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-foreground">Location</label>
-                  <input
-                    type="text"
-                    defaultValue={userProfile.location}
-                    className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground mt-1"
+                  <Input
+                    value={userProfile.location}
+                    onChange={(e) => setUserProfile({ ...userProfile, location: e.target.value })}
+                    className="mt-1"
                   />
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={handleProfileUpdate} className="flex-1">
+                    Save Changes
+                  </Button>
+                  <Button variant="outline" onClick={() => setIsEditing(false)} className="flex-1 bg-transparent">
+                    Cancel
+                  </Button>
                 </div>
               </div>
             )}
@@ -215,7 +307,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="achievements" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
             <TabsTrigger value="activity">Activity Stats</TabsTrigger>

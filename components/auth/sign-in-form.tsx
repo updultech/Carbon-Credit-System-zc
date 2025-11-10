@@ -13,6 +13,7 @@ import Link from "next/link"
 export function SignInForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
   const [formData, setFormData] = useState({
     phone: "",
     password: "",
@@ -20,13 +21,30 @@ export function SignInForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
     setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const response = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
 
-    router.push("/dashboard")
-    setIsLoading(false)
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || "Failed to sign in")
+        setIsLoading(false)
+        return
+      }
+
+      localStorage.setItem("user", JSON.stringify(data.user))
+      router.push("/dashboard")
+    } catch (err) {
+      setError("Network error. Please try again.")
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -41,6 +59,8 @@ export function SignInForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded text-sm">{error}</div>}
+
             <div className="space-y-2">
               <Label htmlFor="phone">Phone Number</Label>
               <div className="relative">

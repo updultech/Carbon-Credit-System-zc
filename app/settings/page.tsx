@@ -10,6 +10,7 @@ import Link from "next/link"
 
 export default function SettingsPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState("notifications")
   const [settings, setSettings] = useState({
     emailNotifications: true,
     smsNotifications: true,
@@ -20,12 +21,44 @@ export default function SettingsPage() {
     language: "en",
     theme: "light",
   })
+  const [savedMessage, setSavedMessage] = useState("")
 
   const handleToggle = (key: keyof typeof settings) => {
     setSettings((prev) => ({
       ...prev,
       [key]: typeof prev[key] === "boolean" ? !prev[key] : prev[key],
     }))
+  }
+
+  const handleSelectChange = (key: keyof typeof settings, value: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      [key]: value,
+    }))
+  }
+
+  const handleSaveChanges = () => {
+    setSavedMessage("Settings saved successfully!")
+    setTimeout(() => setSavedMessage(""), 3000)
+  }
+
+  const handleChangePassword = () => {
+    alert("Password change modal would open here")
+  }
+
+  const handleViewSessions = () => {
+    alert("Active sessions: \n1. Chrome - Desktop (Current)\n2. Safari - Mobile")
+  }
+
+  const handleDownloadData = () => {
+    alert("Your data will be downloaded as a ZIP file")
+  }
+
+  const handleDeleteAccount = () => {
+    const confirmed = confirm("Are you sure you want to delete your account? This cannot be undone.")
+    if (confirmed) {
+      alert("Account deletion request submitted")
+    }
   }
 
   return (
@@ -98,7 +131,7 @@ export default function SettingsPage() {
           <p className="text-muted-foreground">Manage your account preferences and security</p>
         </div>
 
-        <Tabs defaultValue="notifications" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
@@ -184,13 +217,17 @@ export default function SettingsPage() {
 
                 <div className="pb-4 border-b">
                   <p className="font-medium text-foreground mb-2">Change Password</p>
-                  <Button variant="outline">Update Password</Button>
+                  <Button variant="outline" onClick={handleChangePassword}>
+                    Update Password
+                  </Button>
                 </div>
 
                 <div className="pb-4 border-b">
                   <p className="font-medium text-foreground mb-2">Active Sessions</p>
                   <p className="text-sm text-muted-foreground mb-3">Manage your active sessions</p>
-                  <Button variant="outline">View Sessions</Button>
+                  <Button variant="outline" onClick={handleViewSessions}>
+                    View Sessions
+                  </Button>
                 </div>
 
                 <div>
@@ -219,12 +256,7 @@ export default function SettingsPage() {
                   <label className="text-sm font-medium text-foreground block mb-2">Language</label>
                   <select
                     value={settings.language}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        language: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => handleSelectChange("language", e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
                   >
                     <option value="en">English</option>
@@ -238,12 +270,7 @@ export default function SettingsPage() {
                   <label className="text-sm font-medium text-foreground block mb-2">Theme</label>
                   <select
                     value={settings.theme}
-                    onChange={(e) =>
-                      setSettings((prev) => ({
-                        ...prev,
-                        theme: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => handleSelectChange("theme", e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
                   >
                     <option value="light">Light</option>
@@ -255,10 +282,18 @@ export default function SettingsPage() {
                 <div>
                   <p className="font-medium text-foreground mb-2">Account Actions</p>
                   <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start bg-transparent"
+                      onClick={handleDownloadData}
+                    >
                       Download My Data
                     </Button>
-                    <Button variant="outline" className="w-full justify-start text-destructive bg-transparent">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-destructive bg-transparent"
+                      onClick={handleDeleteAccount}
+                    >
                       Delete Account
                     </Button>
                   </div>
@@ -269,13 +304,18 @@ export default function SettingsPage() {
         </Tabs>
 
         {/* Save Button */}
-        <div className="mt-8 flex gap-3">
-          <Button className="flex-1">Save Changes</Button>
-          <Link href="/dashboard" className="flex-1">
-            <Button variant="outline" className="w-full bg-transparent">
-              Cancel
+        <div className="mt-8 space-y-2">
+          {savedMessage && <p className="text-green-600 text-sm">{savedMessage}</p>}
+          <div className="flex gap-3">
+            <Button className="flex-1" onClick={handleSaveChanges}>
+              Save Changes
             </Button>
-          </Link>
+            <Link href="/dashboard" className="flex-1">
+              <Button variant="outline" className="w-full bg-transparent">
+                Cancel
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

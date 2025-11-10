@@ -12,6 +12,16 @@ import { ActivityStats } from "@/components/dashboard/activity-stats"
 
 export default function DashboardPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState("overview")
+
+  const handleRedeemClick = (rewardName: string, credits: number) => {
+    const userCredits = 1250
+    if (credits > userCredits) {
+      alert(`Not enough credits. You need ${credits} credits but have ${userCredits}.`)
+    } else {
+      alert(`Redeemed ${rewardName} for ${credits} credits! Check your account.`)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -27,6 +37,11 @@ export default function DashboardPage() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-4">
+            <Link href="/marketplace">
+              <Button variant="ghost" size="sm">
+                Marketplace
+              </Button>
+            </Link>
             <Link href="/profile">
               <Button variant="ghost" size="sm">
                 <User className="w-4 h-4 mr-2" />
@@ -56,6 +71,11 @@ export default function DashboardPage() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t bg-card/50 p-4 space-y-2">
+            <Link href="/marketplace">
+              <Button variant="ghost" className="w-full justify-start">
+                Marketplace
+              </Button>
+            </Link>
             <Link href="/profile">
               <Button variant="ghost" className="w-full justify-start">
                 <User className="w-4 h-4 mr-2" />
@@ -85,7 +105,7 @@ export default function DashboardPage() {
           <p className="text-muted-foreground">Track your environmental activities and see your positive impact</p>
         </div>
 
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="activities">Activities</TabsTrigger>
@@ -129,7 +149,9 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-primary mb-4">100 Credits</p>
-                  <Button className="w-full">Redeem Now</Button>
+                  <Button className="w-full" onClick={() => handleRedeemClick("Mobile Airtime", 100)}>
+                    Redeem Now
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -140,7 +162,9 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-primary mb-4">500 Credits</p>
-                  <Button className="w-full">Redeem Now</Button>
+                  <Button className="w-full" onClick={() => handleRedeemClick("School Fees", 500)}>
+                    Redeem Now
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -151,7 +175,9 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-primary mb-4">300 Credits</p>
-                  <Button className="w-full">Redeem Now</Button>
+                  <Button className="w-full" onClick={() => handleRedeemClick("Farm Inputs", 300)}>
+                    Redeem Now
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -162,7 +188,9 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-primary mb-4">200 Credits</p>
-                  <Button className="w-full">Redeem Now</Button>
+                  <Button className="w-full" onClick={() => handleRedeemClick("Cash Out", 200)}>
+                    Redeem Now
+                  </Button>
                 </CardContent>
               </Card>
             </div>
